@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const cors = require('cors');
 
-dotenv.config({path:'./config.env'});
+dotenv.config({path:'./.env'});
 
 //Connect to Mongo DB and usng that file here
 require('./db/connection');
