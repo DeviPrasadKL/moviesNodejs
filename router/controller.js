@@ -6,8 +6,17 @@ const MoviesCollection = require('../model/movieSchema'); //To check movie is al
 const apiData = require("../db.json");
 
 
-router.get('/movies', (req, res) => {
-    res.status(200).send(apiData.movies);
+router.get('/movies', async (req, res) => {
+    try{
+        const MovieExists = await MoviesCollection.find();
+        if (MovieExists) {
+            return res.status(200).send(MovieExists);
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({error:err});
+    }
+    // res.status(200).send(apiData.movies);
 });
 
 router.get('/movies:id', (req, res) => {
