@@ -3,24 +3,28 @@ const router = express.Router();  // getting router
 require('../db/connection');  // Using Database connection 
 const MoviesCollection = require('../model/movieSchema'); //To check movie is already there or not
 
-const apiData = require("../db.json");
-
-
+// Get All Movies
 router.get('/movies', async (req, res) => {
-    try{
+    try {
         const MovieExists = await MoviesCollection.find();
         if (MovieExists) {
             return res.status(200).send(MovieExists);
         }
     } catch (err) {
         console.log(err);
-        res.status(500).send({error:err});
+        res.status(500).send({ error: err });
     }
-    // res.status(200).send(apiData.movies);
 });
 
-router.get('/movies:id', (req, res) => {
-    res.status(200).send(apiData.movies.find(movie => movie.id == req.params.id));
+// Get Movie by id 
+router.get('/movie/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const movie = await MoviesCollection.findOne({ _id: id });
+        res.status(200).send(movie);
+    } catch (err) {
+        return res.status(500).send({ error: err });
+    }
 });
 
 //This is by using Promises
@@ -45,6 +49,7 @@ router.get('/movies:id', (req, res) => {
 }) */
 
 
+//Add Movie
 //This is by using Async and await
 router.post('/add-movie', async (req, res) => {
     const { movieName, hero, gener, rating, poster } = req.body;
@@ -66,9 +71,38 @@ router.post('/add-movie', async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        res.status(500).send({error:err});
+        return res.status(500).send({ error: err });
     }
 })
 
+// Update Movie using id 
+router.put('/movie/:id', async (req, res) => {
+    const { movieName, hero, gener, rating, poster } = req.body;
+    const id = req.params.id;
+    if (!movieName || !hero || !gener || !rating || !poster) {
+        return res.status(422).send({ error: "Please fill all the fields" });
+    }
+    try {
+        const movieUpdate = await MoviesCollection.findByIdAndUpdate(id, { movieName, hero, gener, rating, poster });
+        if (movieUpdate) {
+            res.status(200).send({ message: "Movie Updated successfully" });
+        }
+    } catch (err) {
+        return res.status(500).send({ error: err });
+    }
+})
+
+// Delete Movie
+router.delete('/movie/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const movieUpdate = await MoviesCollection.deleteOne({ _id: id });
+        if (movieUpdate) {
+            res.status(200).send({ message: "Movie Deleted successfully" });
+        }
+    } catch (err) {
+        return res.status(500).send({ error: err });
+    }
+})
 
 module.exports = router;
