@@ -83,7 +83,7 @@ router.put('/movie/:id', async (req, res) => {
         return res.status(422).send({ error: "Please fill all the fields" });
     }
     try {
-        const movieUpdate = await MoviesCollection.findByIdAndUpdate(id, { movieName, hero, gener, rating, poster });
+        const movieUpdate = await MoviesCollection.findByIdAndUpdate({ _id: id }, { movieName, hero, gener, rating, poster });
         if (movieUpdate) {
             res.status(200).send({ message: "Movie Updated successfully" });
         }
